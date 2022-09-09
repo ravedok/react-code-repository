@@ -12,7 +12,6 @@ export const CharacterList = () => {
 
     return (    
         <section>
-            <code>{ JSON.stringify(characters) }</code>
             <ul>
                 {characters.map(character => <li key={ character.id }>{ character.knownAs }</li>)}
             </ul>
