@@ -1,6 +1,6 @@
 import App, { Title } from './App';
 import TestRenderer from 'react-test-renderer';
-import { CharacterList } from './CharacterList/CharacterList';
+import { CharacterList } from './components/CharacterList/CharacterList';
 
 describe("Game of Thrones", () => {  
   it('shoud include app title', async () => {

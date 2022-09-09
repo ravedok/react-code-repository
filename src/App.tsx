@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import './App.css';
-import { CharacterList } from './CharacterList/CharacterList';
+import { CharacterList } from './components/CharacterList/CharacterList';
 
 export const Title = styled.h1`
     text-align: center;
