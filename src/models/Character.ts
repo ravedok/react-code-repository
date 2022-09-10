@@ -1,10 +1,16 @@
 import { CharacterJson } from "../api/characters";
 
+export enum Gender {
+    'Female',
+    'Male'
+}
+
 export class Character {
     constructor(
         public name: string, 
         public url: string,
-        public aliases: string[]
+        public aliases: string[],
+        public gender: Gender
     ) {
     }
 
@@ -24,6 +30,6 @@ export class Character {
     }
 
     static fromJson(json: CharacterJson): Character{
-        return new Character(json.name, json.url, json.aliases);
+        return new Character(json.name, json.url, json.aliases, json.gender);
     }
 }

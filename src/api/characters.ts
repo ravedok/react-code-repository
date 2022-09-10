@@ -1,9 +1,10 @@
-import { Character } from "../models/Character";
+import { Character, Gender } from "../models/Character";
 
 export interface CharacterJson {
     name: string;
     url: string;
     aliases: string[];
+    gender: Gender;
 }
 
 export async function getCharacters() {
