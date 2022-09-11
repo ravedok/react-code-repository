@@ -3,14 +3,13 @@ import { PostList } from "./PostList";
 import postFixtures from "../../fixtures/posts.json";
 
 describe("Post List", () => {  
-
-  beforeEach(() => {
-});
-
   it('shoud include component text', async () => {
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
+        headers: {
+          get: () => 100
+        },
         json: () => Promise.resolve(postFixtures),
       }),
     ) as jest.Mock;
