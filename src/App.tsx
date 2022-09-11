@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import "./App.css";
 import { PostList } from "./components/PostList/PostList";
+import { GlobalStyle } from "./globalStyle";
 
 export const Title = styled.h1`
   text-align: center;
@@ -9,12 +10,13 @@ export const Title = styled.h1`
 
 function App() {
   return (
-    <div>
+    <React.Fragment>
+      <GlobalStyle />
       <header>
         <Title>Fake Blog</Title>
       </header>
       <PostList />
-    </div>
+    </React.Fragment>
   );
 }
 
