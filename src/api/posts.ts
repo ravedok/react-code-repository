@@ -1,6 +1,7 @@
 import { Post } from "../models/Post";
 import { getPaginatedResult } from "./getPaginatedResult";
 import { PaginatedResult } from "./PaginatedResult";
+import { getUser } from "./users";
 
 export interface PostJson {
   id: number;
@@ -12,5 +13,13 @@ export interface PostJson {
 export async function getPosts(
   page: number = 1
 ): Promise<PaginatedResult<Post>> {
-  return getPaginatedResult<Post, PostJson>("posts", Post.fromJson, page);
+  const mapJsonToPost = async (json: PostJson): Promise<Post> => {
+    const { id, userId, title, body } = json;
+
+    const user = await getUser(userId);
+
+    return new Post(id, user, title, body);
+  };
+
+  return getPaginatedResult<Post, PostJson>("posts", mapJsonToPost, page);
 }
