@@ -4,13 +4,14 @@ import { apiUrl, itemsPerPage } from "../config";
 export const getPaginatedResult = async <ClassType, JsonType>(
   resource: string,
   mapToEntityCallback: (json: JsonType) => Promise<ClassType>,
-  page: number
+  page: number,
+  query: string
 ): Promise<PaginatedResult<ClassType>> => {
   const start = itemsPerPage * (page - 1);
   const limit = itemsPerPage;
 
   const response = await fetch(
-    `${apiUrl}/${resource}?_start=${start}&_limit=${limit}`
+    `${apiUrl}/${resource}?_start=${start}&_limit=${limit}&q=${query}`
   );
 
   const totalItems = Number(response.headers.get("X-Total-Count"));

@@ -6,6 +6,7 @@ import { GlobalStyle } from "./globalStyle";
 
 export const Title = styled.h1`
   text-align: center;
+  margin: 1rem 0;
 `;
 
 function App() {

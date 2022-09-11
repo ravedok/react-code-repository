@@ -11,7 +11,8 @@ export interface PostJson {
 }
 
 export async function getPosts(
-  page: number = 1
+  page: number = 1,
+  query: string = ""
 ): Promise<PaginatedResult<Post>> {
   const mapJsonToPost = async (json: PostJson): Promise<Post> => {
     const { id, userId, title, body } = json;
@@ -21,5 +22,10 @@ export async function getPosts(
     return new Post(id, user, title, body);
   };
 
-  return getPaginatedResult<Post, PostJson>("posts", mapJsonToPost, page);
+  return getPaginatedResult<Post, PostJson>(
+    "posts",
+    mapJsonToPost,
+    page,
+    query
+  );
 }

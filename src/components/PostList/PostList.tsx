@@ -5,6 +5,7 @@ import { getPosts } from "../../api/posts";
 import { Post } from "../../models/Post";
 import { Loading } from "../Loading/Loading";
 import { Paginator } from "../Paginator/Paginator";
+import { SearchBox } from "../SearchBox/SearchBox";
 import { PostListItem } from "./PostListItem";
 
 const List = styled.ul`
@@ -13,7 +14,13 @@ const List = styled.ul`
   display: grid;
   row-gap: 1rem;
   column-gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+`;
+
+const NoData = styled.div`
+  padding: 2rem;
+  font-size: 2rem;
+  text-align: center;
 `;
 
 const Container = styled.section`
@@ -31,31 +38,35 @@ const LoadingContainer = styled.div`
 
 export const PostList = () => {
   const [posts, setPosts] = useState<PaginatedResult<Post>>();
-
   const [loading, setLoading] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [query, setQuery] = useState<string>("");
 
-  const loadData = (page: number = 1) => {
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setQuery(query);
+  };
+
+  useEffect(() => {
     setLoading(true);
-    getPosts(page).then((posts) => {
+    getPosts(page, query).then((posts) => {
       setPosts(posts);
       setLoading(false);
     });
-  };
-
-  const handlePageChange = (newPage: number) => {
-    loadData(newPage);
-  };
-
-  useEffect(() => loadData(), []);
+  }, [query, page]);
 
   return (
     <Container>
+      <SearchBox onSearch={handleSearchChange} />
       {loading && (
         <LoadingContainer>
           <Loading />
         </LoadingContainer>
       )}
-      {!loading && posts && (
+      {!loading && posts && posts.data.length > 0 && (
         <React.Fragment>
           <List>
             {posts.data.map((post) => (
@@ -64,6 +75,10 @@ export const PostList = () => {
           </List>
           <Paginator {...posts} onChangePage={handlePageChange} />
         </React.Fragment>
+      )}
+
+      {!loading && posts?.data.length === 0 && (
+        <NoData>We have not found post.</NoData>
       )}
     </Container>
   );

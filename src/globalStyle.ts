@@ -4,10 +4,11 @@ import reset from "styled-reset";
 export const GlobalStyle = createGlobalStyle`
     ${reset};
 
-
-    body {
+    html, body {
         font-family: 'Open Sans', sans-serif;
         font-weight: 400;
+        margin: 0;
+        padding: 0;
     }
 
     h1 {
