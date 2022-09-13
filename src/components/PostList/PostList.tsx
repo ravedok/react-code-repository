@@ -24,9 +24,10 @@ const NoData = styled.div`
 `;
 
 const Container = styled.section`
-  margin: 1rem;
   display: flex;
   flex-direction: column;
+  max-width: 1200px;
+  margin: 1rem auto;
 `;
 
 const LoadingContainer = styled.div`
