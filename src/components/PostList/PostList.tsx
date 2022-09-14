@@ -3,25 +3,8 @@ import styled from "styled-components";
 import { PaginatedResult } from "../../api/PaginatedResult";
 import { getPosts } from "../../api/posts";
 import { Post } from "../../models/Post";
-import { Loading } from "../Loading/Loading";
-import { Paginator } from "../Paginator/Paginator";
 import { SearchBox } from "../SearchBox/SearchBox";
-import { PostListItem } from "./PostListItem";
-
-const List = styled.ul`
-  margin: 0;
-  padding: 0;
-  display: grid;
-  row-gap: 1rem;
-  column-gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-`;
-
-const NoData = styled.div`
-  padding: 2rem;
-  font-size: 2rem;
-  text-align: center;
-`;
+import { ListContainerProps, PostListContainer } from "./PostListContainer";
 
 const Container = styled.section`
   display: flex;
@@ -30,18 +13,17 @@ const Container = styled.section`
   margin: 1rem auto;
 `;
 
-const LoadingContainer = styled.div`
-  height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const PostList = () => {
-  const [posts, setPosts] = useState<PaginatedResult<Post>>();
+  const [posts, setPosts] = useState<PaginatedResult<Post> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [query, setQuery] = useState<string>("");
+
+  const handleError = (err: Error) => {
+    setPosts(null);
+    setErrorMessage(err.message);
+  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -53,34 +35,27 @@ export const PostList = () => {
 
   useEffect(() => {
     setLoading(true);
-    getPosts(page, query).then((posts) => {
-      setPosts(posts);
-      setLoading(false);
-    });
+    setErrorMessage(null);
+    getPosts(page, query)
+      .then((posts) => {
+        setPosts(posts);
+        setLoading(false);
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false));
   }, [query, page]);
+
+  const listContainerProps: ListContainerProps = {
+    posts,
+    loading,
+    errorMessage,
+    handlePageChange,
+  };
 
   return (
     <Container>
       <SearchBox onSearch={handleSearchChange} />
-      {loading && (
-        <LoadingContainer>
-          <Loading />
-        </LoadingContainer>
-      )}
-      {!loading && posts && posts.data.length > 0 && (
-        <React.Fragment>
-          <List>
-            {posts.data.map((post) => (
-              <PostListItem key={post.id} post={post} />
-            ))}
-          </List>
-          <Paginator {...posts} onChangePage={handlePageChange} />
-        </React.Fragment>
-      )}
-
-      {!loading && posts?.data.length === 0 && (
-        <NoData>We have not found post.</NoData>
-      )}
+      <PostListContainer {...listContainerProps} />
     </Container>
   );
 };

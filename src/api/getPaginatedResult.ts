@@ -1,5 +1,6 @@
 import { PaginatedResult } from "./PaginatedResult";
 import { apiUrl, itemsPerPage } from "../config";
+import { handleHttpErrorFromResponse } from "./HttpErrors";
 
 export const getPaginatedResult = async <ClassType, JsonType>(
   resource: string,
@@ -13,6 +14,8 @@ export const getPaginatedResult = async <ClassType, JsonType>(
   const response = await fetch(
     `${apiUrl}/${resource}?_start=${start}&_limit=${limit}&q=${query}`
   );
+
+  handleHttpErrorFromResponse(response);
 
   const totalItems = Number(response.headers.get("X-Total-Count"));
   const totalPages = Math.ceil(totalItems / itemsPerPage);
