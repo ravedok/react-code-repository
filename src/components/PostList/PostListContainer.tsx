@@ -8,7 +8,7 @@ import { Paginator } from "../Paginator/Paginator";
 import { PostListItem } from "./PostListItem";
 
 const List = styled.ul`
-  margin: 0;
+  margin: 0 1rem;
   padding: 0;
   display: grid;
   row-gap: 1rem;
