@@ -5,6 +5,8 @@ declare module "styled-components" {
     colors: {
       brand: string;
       danger: string;
+      black: string;
+      dark: string;
     };
   }
 }

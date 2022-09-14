@@ -1,10 +1,13 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { rgba } from "polished";
+import { theme } from "../../styled/theme";
+import { MagnifyngGlassIcon } from "./MagnifyingGlassIncon";
+import { TimesIcon } from "./TimesIcon";
 
 const Input = styled.input`
-  border: 1px solid #ccc;
+  border: 0;
   font-size: 1.2rem;
-  border-radius: 1rem 0 0 1rem;
   padding: 0.25rem 0.5rem;
   flex: 1;
   max-width: calc(100vw - 8rem);
@@ -15,21 +18,29 @@ const Input = styled.input`
     border-color: #000;
   }
 `;
-const Button = styled.button`
-  border: 1px solid #ccc;
-  border-left: none;
+const SearchButton = styled.button`
+  border: 0;
   background: none;
   box-shadow: none;
-  border-radius: 0px;
-  font-size: 1.2rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0 1rem 1rem 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 `;
-const Container = styled.div`
+
+const Container = styled.div<{ focus: boolean }>`
   margin: 0 1rem 1rem;
   align-self: center;
   display: flex;
   max-width: calc(100vw - 2rem);
+  box-shadow: ${({ focus, theme }) =>
+    focus ? `${rgba(theme.colors.brand, 0.15)} 0px 0px 0px 4px;` : "none"};
+  border: 1px solid ${({ theme }) => theme.colors.black};
+
+  border-color: ${({ focus, theme }) =>
+    focus ? "transparent" : theme.colors.dark};
+
+  border-radius: 0.5rem;
+  padding: 0.25rem;
 `;
 
 type SerchBoxProps = {
@@ -37,22 +48,41 @@ type SerchBoxProps = {
 };
 
 export const SearchBox = ({ onSearch }: SerchBoxProps) => {
-  let debounceTimer: ReturnType<typeof setTimeout>;
+  const [focus, setFocus] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
+  const inputSearch = useRef<HTMLInputElement>(null);
 
-  const inputSearch = useRef(null);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch(query);
+    }, 400);
 
-  const handlerOnInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [onSearch, query]);
 
-    debounceTimer = setTimeout(() => onSearch(e.target.value), 400);
+  const handlerSearchButtonClick = () => {
+    inputSearch.current?.focus();
+    setQuery("");
   };
 
+  const iconColor = focus ? theme.colors.brand : theme.colors.black;
+  const showErase = query ? true : false;
+
   return (
-    <Container>
-      <Input ref={inputSearch} onChange={handlerOnInputChange} />
-      <Button>buscar</Button>
+    <Container focus={focus}>
+      <Input
+        ref={inputSearch}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
+      />
+      <SearchButton onClick={handlerSearchButtonClick}>
+        {!showErase && <MagnifyngGlassIcon color={iconColor} />}
+        {showErase && <TimesIcon color={iconColor} />}
+      </SearchButton>
     </Container>
   );
 };
