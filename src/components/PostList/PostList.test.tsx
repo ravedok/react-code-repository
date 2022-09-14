@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import "jest-styled-components";
 import { PostList } from "./PostList";
 import postFixtures from "../../fixtures/posts.json";
 import userFixtures from "../../fixtures/users.json";
@@ -6,6 +7,8 @@ import {
   NotFoundHttpError,
   NOT_FOUND_ERROR_MESSAGE,
 } from "../../api/HttpErrors";
+import { ThemeProvider } from "styled-components";
+import { theme } from "../../styled/theme";
 
 describe("Post List", () => {
   it("shoud include component text", async () => {
@@ -40,7 +43,11 @@ describe("Post List", () => {
   it("shoud show error when network fail", async () => {
     global.fetch = jest.fn().mockRejectedValue(new NotFoundHttpError());
 
-    render(<PostList />);
+    render(
+      <ThemeProvider theme={theme}>
+        <PostList />
+      </ThemeProvider>
+    );
 
     expect(fetch).toHaveBeenCalledTimes(1);
 

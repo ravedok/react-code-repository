@@ -7,7 +7,7 @@ type ErrorProps = {
 
 const Container = styled.div`
   font-size: 1.2rem;
-  color: red;
+  color: ${({ theme }) => theme.colors.brand};
   margin: 1rem auto;
 `;
 
