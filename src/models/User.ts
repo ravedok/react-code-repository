@@ -1,4 +1,4 @@
-import { UserJson } from "../api/users";
+import { UserJson } from "../api/userRepository";
 
 export class User {
   constructor(

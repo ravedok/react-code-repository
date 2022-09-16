@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { PaginatedResult } from "../../api/PaginatedResult";
-import { getPosts } from "../../api/posts";
+import { getPosts } from "../../api/postRespository";
 import { Post } from "../../models/Post";
 import { SearchBox } from "../SearchBox/SearchBox";
 import { ListContainerProps, PostListContainer } from "./PostListContainer";

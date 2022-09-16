@@ -1,7 +1,7 @@
 import { Post } from "../models/Post";
 import { getPaginatedResult } from "./getPaginatedResult";
 import { PaginatedResult } from "./PaginatedResult";
-import { getUser } from "./users";
+import { getUser } from "./userRepository";
 
 export interface PostJson {
   id: number;

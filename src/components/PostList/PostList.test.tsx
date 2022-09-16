@@ -27,7 +27,11 @@ describe("Post List", () => {
       .mockReturnValueOnce(makeFetchResp(userFixtures[0]))
       .mockReturnValueOnce(makeFetchResp(userFixtures[1]));
 
-    render(<PostList />);
+    render(
+      <ThemeProvider theme={theme}>
+        <PostList />
+      </ThemeProvider>
+    );
 
     expect(fetch).toHaveBeenCalledTimes(1);
 

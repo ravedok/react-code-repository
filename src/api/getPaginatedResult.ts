@@ -2,40 +2,52 @@ import { PaginatedResult } from "./PaginatedResult";
 import { apiUrl, itemsPerPage } from "../config";
 import { handleHttpErrorFromResponse } from "./HttpErrors";
 
+const mapDataFromResponse = async <ClassType, JsonType>(
+  response: Response,
+  mapToEntityCallback: (json: JsonType) => Promise<ClassType>
+) => {
+  const json: JsonType[] = await response.json();
+
+  const results = [];
+
+  for (const item of json) {
+    results.push(await mapToEntityCallback(item));
+  }
+
+  return results;
+};
+
+const getPaginatedResponseWithQuery = async (
+  resource: string,
+  page: number,
+  query: string
+): Promise<Response> => {
+  const start = itemsPerPage * (page - 1);
+  const limit = itemsPerPage;
+
+  return fetch(
+    `${apiUrl}/${resource}?_start=${start}&_limit=${limit}&q=${query}`
+  );
+};
+
+const getTotalItemsFromResponse = (response: Response): number => {
+  return Number(response.headers.get("X-Total-Count"));
+};
+
 export const getPaginatedResult = async <ClassType, JsonType>(
   resource: string,
   mapToEntityCallback: (json: JsonType) => Promise<ClassType>,
   page: number,
   query: string
 ): Promise<PaginatedResult<ClassType>> => {
-  const start = itemsPerPage * (page - 1);
-  const limit = itemsPerPage;
-
-  const response = await fetch(
-    `${apiUrl}/${resource}?_start=${start}&_limit=${limit}&q=${query}`
-  );
+  const response = await getPaginatedResponseWithQuery(resource, page, query);
 
   handleHttpErrorFromResponse(response);
 
-  const totalItems = Number(response.headers.get("X-Total-Count"));
+  const totalItems = getTotalItemsFromResponse(response);
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const json: JsonType[] = await response.json();
-
-  const mapData = async (
-    data: JsonType[],
-    fn: (json: JsonType) => Promise<ClassType>
-  ) => {
-    const results = [];
-
-    for (const item of data) {
-      results.push(await fn(item));
-    }
-
-    return results;
-  };
-
-  const data = await mapData(json, mapToEntityCallback);
+  const data = await mapDataFromResponse(response, mapToEntityCallback);
 
   return {
     page: page,
