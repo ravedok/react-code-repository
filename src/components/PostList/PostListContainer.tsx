@@ -5,6 +5,7 @@ import { Post } from "../../models/Post";
 import { ErrorMessage } from "../Error/Error";
 import { Loading } from "../Loading/Loading";
 import { Paginator } from "../Paginator/Paginator";
+import { Status } from "./PostList";
 import { PostListItem } from "./PostListItem";
 
 const List = styled.ul`
@@ -31,22 +32,20 @@ const LoadingContainer = styled.div`
 
 export type ListContainerProps = {
   posts: PaginatedResult<Post> | null;
-  loading: boolean;
-  errorMessage: string | null;
+  status: Status;
   handlePageChange: (page: number) => void;
 };
 
 export const PostListContainer = ({
   posts,
-  loading,
-  errorMessage,
+  status,
   handlePageChange,
 }: ListContainerProps) => {
-  if (errorMessage) {
-    return <ErrorMessage message={errorMessage} />;
+  if (status === Status.ERROR) {
+    return <ErrorMessage message="There was an error getting the data." />;
   }
 
-  if (loading) {
+  if (status === Status.LOADING) {
     return (
       <LoadingContainer>
         <Loading />

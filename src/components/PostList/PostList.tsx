@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import { PaginatedResult } from "../../api/PaginatedResult";
 import { getPosts } from "../../api/postRespository";
@@ -13,17 +13,17 @@ const Container = styled.section`
   margin: 1rem auto;
 `;
 
+export const enum Status {
+  LOADING = "LOADING",
+  LOADED = "LOADED",
+  ERROR = "ERROR",
+}
+
 export const PostList = () => {
   const [posts, setPosts] = useState<PaginatedResult<Post> | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>(Status.LOADING);
   const [page, setPage] = useState<number>(1);
   const [query, setQuery] = useState<string>("");
-
-  const handleError = (err: Error) => {
-    setPosts(null);
-    setErrorMessage(err.message);
-  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -34,21 +34,21 @@ export const PostList = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    setErrorMessage(null);
+    setStatus(Status.LOADING);
     getPosts(page, query)
       .then((posts) => {
         setPosts(posts);
-        setLoading(false);
       })
-      .catch(handleError)
-      .finally(() => setLoading(false));
+      .catch(() => setStatus(Status.ERROR));
   }, [query, page]);
+
+  useLayoutEffect(() => {
+    setStatus(Status.LOADED);
+  }, [posts]);
 
   const listContainerProps: ListContainerProps = {
     posts,
-    loading,
-    errorMessage,
+    status,
     handlePageChange,
   };
 
