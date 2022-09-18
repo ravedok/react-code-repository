@@ -6,7 +6,7 @@ import { ErrorMessage } from "../Error/Error";
 import { Loading } from "../Loading/Loading";
 import { Paginator } from "../Paginator/Paginator";
 import { Status } from "./PostList";
-import { PostListItem } from "./PostListItem";
+import { PostCard } from "../PostCard/PostCard";
 
 const List = styled.ul`
   margin: 0 1rem;
@@ -15,6 +15,13 @@ const List = styled.ul`
   row-gap: 1rem;
   column-gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+`;
+
+const Item = styled.li`
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
 `;
 
 const NoData = styled.div`
@@ -58,7 +65,9 @@ export const PostListContainer = ({
       <React.Fragment>
         <List>
           {posts.data.map((post) => (
-            <PostListItem key={post.id} post={post} />
+            <Item key={post.id}>
+              <PostCard post={post} />
+            </Item>
           ))}
         </List>
         <Paginator {...posts} onChangePage={handlePageChange} />

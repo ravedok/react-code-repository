@@ -7,6 +7,11 @@ declare module "styled-components" {
       danger: string;
       black: string;
       dark: string;
+      light: string;
+    };
+
+    shadows: {
+      light: string;
     };
   }
 }

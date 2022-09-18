@@ -37,7 +37,7 @@ describe("Post List", () => {
 
     expect(
       await screen.findByText(
-        "sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
+        "Sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
       )
     ).toBeInTheDocument();
     expect(screen.getAllByText("Leanne Graham")).toHaveLength(8);

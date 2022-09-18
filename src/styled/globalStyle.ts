@@ -1,5 +1,7 @@
+import { darken } from "polished";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+import { theme } from "./theme";
 
 export const GlobalStyle = createGlobalStyle`
     ${reset};
@@ -19,5 +21,12 @@ export const GlobalStyle = createGlobalStyle`
     h4 {
         font-size: 1.4rem;
         font-weight: 500;
+    }
+
+    a {
+        color: ${theme.colors.brand};
+        &:hover {
+            color: ${darken(0.2, theme.colors.brand)};
+        }
     }
 `;
