@@ -1,14 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "jest-styled-components";
+import TestRenderer from "react-test-renderer";
 import { PostList } from "./PostList";
 import postFixtures from "../../fixtures/posts.json";
 import userFixtures from "../../fixtures/users.json";
-import {
-  NotFoundHttpError,
-  NOT_FOUND_ERROR_MESSAGE,
-} from "../../api/HttpErrors";
+import { NotFoundHttpError } from "../../api/HttpErrors";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../../styled/theme";
+import { ErrorMessage } from "../Error/Error";
+import { Loading } from "../Loading/Loading";
 
 describe("Post List", () => {
   it("shoud include component text", async () => {
@@ -47,16 +47,36 @@ describe("Post List", () => {
   it("shoud show error when network fail", async () => {
     global.fetch = jest.fn().mockRejectedValue(new NotFoundHttpError());
 
-    render(
+    const renderer = TestRenderer.create(
       <ThemeProvider theme={theme}>
         <PostList />
       </ThemeProvider>
     );
 
-    expect(fetch).toHaveBeenCalledTimes(1);
+    const instance = renderer.root;
 
-    expect(
-      await screen.findByText(NOT_FOUND_ERROR_MESSAGE)
-    ).toBeInTheDocument();
+    expect(await instance.findByType(Loading)).not.toBe(null);
+
+    await waitFor(async () =>
+      expect(await instance.findByType(ErrorMessage)).not.toBe(null)
+    );
+  });
+
+  it("shoud show not error when network fail", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new NotFoundHttpError());
+
+    const renderer = TestRenderer.create(
+      <ThemeProvider theme={theme}>
+        <PostList />
+      </ThemeProvider>
+    );
+
+    const instance = renderer.root;
+
+    expect(await instance.findByType(Loading)).not.toBe(null);
+
+    await waitFor(async () =>
+      expect(await instance.findByType(ErrorMessage)).not.toBe(null)
+    );
   });
 });
