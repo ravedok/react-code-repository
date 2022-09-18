@@ -15,7 +15,7 @@ const Input = styled.input`
   &:focus {
     outline: none;
     box-shadow: none;
-    border-color: #000;
+    border-color: ${({ theme }) => theme.colors.black};
   }
 `;
 const SearchButton = styled.button`
