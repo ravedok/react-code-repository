@@ -1,10 +1,11 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useMachine } from "@xstate/react";
 import styled from "styled-components";
-import { PaginatedResult } from "../../api/PaginatedResult";
 import { getPosts } from "../../api/postRespository";
 import { Post } from "../../models/Post";
 import { SearchBox } from "../SearchBox/SearchBox";
 import { ListContainerProps, PostListContainer } from "./PostListContainer";
+import { fetchMachine } from "../../machines";
 
 const Container = styled.section`
   display: flex;
@@ -13,42 +14,42 @@ const Container = styled.section`
   margin: 1rem auto;
 `;
 
-export const enum Status {
-  LOADING = "LOADING",
-  LOADED = "LOADED",
-  ERROR = "ERROR",
-}
-
 export const PostList = () => {
-  const [posts, setPosts] = useState<PaginatedResult<Post> | null>(null);
-  const [status, setStatus] = useState<Status>(Status.LOADING);
   const [page, setPage] = useState<number>(1);
   const [query, setQuery] = useState<string>("");
+
+  const [fetchState, sendToFetchMachine] = useMachine(fetchMachine<Post>, {
+    actions: {
+      fetchData: (ctx, event) => {
+        getPosts(page, query)
+          .then((res) => {
+            sendToFetchMachine({ type: "RESOLVE", ...res });
+          })
+          .catch(() => {
+            sendToFetchMachine({ type: "REJECT" });
+          });
+      },
+    },
+  });
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleSearchChange = (query: string) => {
-    setQuery(query);
+  const handleSearchChange = (value: string) => {
+    if (query === value) {
+      return;
+    }
+
+    setQuery(value);
   };
 
   useEffect(() => {
-    setStatus(Status.LOADING);
-    getPosts(page, query)
-      .then((posts) => {
-        setPosts(posts);
-      })
-      .catch(() => setStatus(Status.ERROR));
-  }, [query, page]);
-
-  useLayoutEffect(() => {
-    setStatus(Status.LOADED);
-  }, [posts]);
+    sendToFetchMachine({ type: "FETCH" });
+  }, [sendToFetchMachine, query, page]);
 
   const listContainerProps: ListContainerProps = {
-    posts,
-    status,
+    fetchState,
     handlePageChange,
   };
 
